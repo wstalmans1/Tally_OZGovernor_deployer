@@ -241,7 +241,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 		const tokenContract = (await Token.attach(token_address)) as ERC20Token;
 
 		const _to = config.firstMint.to ? config.firstMint.to : deployer;
-		const _amount = config.firstMint.amount;
+		const _amount = hre.ethers.parseEther(config.firstMint.amount.toString());
 
 		// Mint tokens to the receiving address
 		await tokenContract.mint(_to, _amount)

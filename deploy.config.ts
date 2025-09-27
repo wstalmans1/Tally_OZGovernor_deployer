@@ -15,9 +15,9 @@ export const config:any = {
   governor: {
     name: "WE LOVE TALLY DAO",
     // 7200 is 24 hours (assuming 12 seconds per block)
-    votingDelay: 1,
+    votingDelay: 10,
     // 50400 is 7 days (assuming 12 seconds per block)
-    votingPeriod: 25,
+    votingPeriod: 50,
     // Quorum numerator to denominator of 100
     quorumNumerator: 4,
     // Threshold to be able to propose
@@ -35,7 +35,7 @@ export const config:any = {
   // 
   // After the first mint, the deployer will lose the minter and admin role and give it to the timelock, which is the executor.
   firstMint: {
-    amount: 100, // If set higher than zero, it will mint the specified amount of tokens to the address below
+    amount: 200, // If set higher than zero, it will mint the specified amount of tokens to the address below
     // 'to' is an Ethereum Address. If empty, it will default to the deployer. If incorrect, it will also default to the deployer (a warning will be issued when deploying).
     to: "0xD78C12137087D394c0FA49634CAa80D0a1985A8A",
   }
