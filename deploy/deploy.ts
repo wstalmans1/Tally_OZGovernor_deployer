@@ -224,6 +224,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 	// MINTING the first amount and managing roles to remove it to deployer granting it only to the timelock.
 	await(async function mintAndRolesManagement(){
+		console.log("Starting minting and roles management...");
+		console.log("First mint amount:", config.firstMint.amount);
+		console.log("First mint to address:", config.firstMint.to);
 
 		// check if config.firstMint.to is valid address
 		if ( config.firstMint.amount <= 0 ) {
@@ -245,7 +248,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
 		// Mint tokens to the receiving address
 		await tokenContract.mint(_to, _amount)
-		console.log(`Minted ${_amount} tokens to ${_to}`);
+		console.log(`Minted ${config.firstMint.amount} tokens to ${_to}`);
 
 		// Grant the minter role to the receiving address
 		await tokenContract.grantRole(await tokenContract.MINTER_ROLE(), timelock_address);
