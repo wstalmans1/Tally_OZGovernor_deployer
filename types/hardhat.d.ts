@@ -22,6 +22,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAccessControl__factory>;
     getContractFactory(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable__factory>;
+    getContractFactory(
       name: "GovernorCountingSimple",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GovernorCountingSimple__factory>;
@@ -206,6 +210,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OZGovernor__factory>;
     getContractFactory(
+      name: "Counter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Counter__factory>;
+    getContractFactory(
       name: "ERC20Token",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Token__factory>;
@@ -213,6 +221,10 @@ declare module "hardhat/types/runtime" {
       name: "OZGovernor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OZGovernor__factory>;
+    getContractFactory(
+      name: "SimpleCounter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SimpleCounter__factory>;
     getContractFactory(
       name: "TimelockController",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -229,6 +241,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAccessControl>;
     getContractAt(
+      name: "Ownable",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Ownable>;
+    getContractAt(
       name: "GovernorCountingSimple",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -459,6 +476,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.OZGovernor>;
     getContractAt(
+      name: "Counter",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Counter>;
+    getContractAt(
       name: "ERC20Token",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -468,6 +490,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.OZGovernor>;
+    getContractAt(
+      name: "SimpleCounter",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SimpleCounter>;
     getContractAt(
       name: "TimelockController",
       address: string | ethers.Addressable,
@@ -483,6 +510,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAccessControl>;
     deployContract(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
       name: "GovernorCountingSimple",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.GovernorCountingSimple>;
@@ -667,6 +698,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
     deployContract(
+      name: "Counter",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Counter>;
+    deployContract(
       name: "ERC20Token",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20Token>;
@@ -674,6 +709,10 @@ declare module "hardhat/types/runtime" {
       name: "OZGovernor",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
+    deployContract(
+      name: "SimpleCounter",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SimpleCounter>;
     deployContract(
       name: "TimelockController",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -690,6 +729,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAccessControl>;
     deployContract(
+      name: "Ownable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
       name: "GovernorCountingSimple",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -920,6 +964,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
     deployContract(
+      name: "Counter",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Counter>;
+    deployContract(
       name: "ERC20Token",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -929,6 +978,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
+    deployContract(
+      name: "SimpleCounter",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SimpleCounter>;
     deployContract(
       name: "TimelockController",
       args: any[],

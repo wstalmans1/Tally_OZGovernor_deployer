@@ -3,6 +3,8 @@
 /* eslint-disable */
 import type * as clock from "./clock";
 export type { clock };
+export type { Counter } from "./Counter";
 export type { ERC20Token } from "./ERC20Token";
 export type { OZGovernor } from "./OZGovernor";
+export type { SimpleCounter } from "./SimpleCounter";
 export type { TimelockController } from "./TimelockController";

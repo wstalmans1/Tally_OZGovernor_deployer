@@ -10,6 +10,8 @@ export type { AccessControl } from "./@openzeppelin/contracts/access/AccessContr
 export { AccessControl__factory } from "./factories/@openzeppelin/contracts/access/AccessControl__factory";
 export type { IAccessControl } from "./@openzeppelin/contracts/access/IAccessControl";
 export { IAccessControl__factory } from "./factories/@openzeppelin/contracts/access/IAccessControl__factory";
+export type { Ownable } from "./@openzeppelin/contracts/access/Ownable";
+export { Ownable__factory } from "./factories/@openzeppelin/contracts/access/Ownable__factory";
 export type { GovernorCountingSimple } from "./@openzeppelin/contracts/governance/extensions/GovernorCountingSimple";
 export { GovernorCountingSimple__factory } from "./factories/@openzeppelin/contracts/governance/extensions/GovernorCountingSimple__factory";
 export type { GovernorPreventLateQuorum } from "./@openzeppelin/contracts/governance/extensions/GovernorPreventLateQuorum";
@@ -102,3 +104,7 @@ export type { ERC20Token } from "./contracts/clock/ERC20Token";
 export { ERC20Token__factory } from "./factories/contracts/clock/ERC20Token__factory";
 export type { OZGovernor } from "./contracts/clock/OZGovernor";
 export { OZGovernor__factory } from "./factories/contracts/clock/OZGovernor__factory";
+export type { Counter } from "./contracts/Counter";
+export { Counter__factory } from "./factories/contracts/Counter__factory";
+export type { SimpleCounter } from "./contracts/SimpleCounter";
+export { SimpleCounter__factory } from "./factories/contracts/SimpleCounter__factory";
