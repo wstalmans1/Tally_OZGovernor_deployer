@@ -9,6 +9,7 @@ import {
 } from "ethers";
 import type {
   Signer,
+  BigNumberish,
   AddressLike,
   ContractDeployTransaction,
   ContractRunner,
@@ -20,8 +21,13 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "initial",
+        type: "uint256",
+      },
+      {
         internalType: "address",
-        name: "timelock",
+        name: "_owner",
         type: "address",
       },
     ],
@@ -29,26 +35,48 @@ const _abi = [
     type: "constructor",
   },
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "address",
-        name: "owner",
-        type: "address",
+        indexed: true,
+        internalType: "bytes32",
+        name: "key",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "oldVal",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newVal",
+        type: "uint256",
       },
     ],
-    name: "OwnableInvalidOwner",
-    type: "error",
+    name: "ConfigSet",
+    type: "event",
   },
   {
+    anonymous: false,
     inputs: [
       {
-        internalType: "address",
-        name: "account",
-        type: "address",
+        indexed: false,
+        internalType: "uint256",
+        name: "by",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newValue",
+        type: "uint256",
       },
     ],
-    name: "OwnableUnauthorizedAccount",
-    type: "error",
+    name: "Incremented",
+    type: "event",
   },
   {
     anonymous: false,
@@ -56,7 +84,7 @@ const _abi = [
       {
         indexed: true,
         internalType: "address",
-        name: "previousOwner",
+        name: "oldOwner",
         type: "address",
       },
       {
@@ -66,12 +94,56 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "OwnershipTransferred",
+    name: "OwnerChanged",
     type: "event",
   },
   {
-    inputs: [],
-    name: "increment",
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "oldValue",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newValue",
+        type: "uint256",
+      },
+    ],
+    name: "ValueSet",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    name: "config",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "by",
+        type: "uint256",
+      },
+    ],
+    name: "inc",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -90,8 +162,19 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "renounceOwnership",
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "key",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "val",
+        type: "uint256",
+      },
+    ],
+    name: "setConfig",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -104,7 +187,20 @@ const _abi = [
         type: "address",
       },
     ],
-    name: "transferOwnership",
+    name: "setOwner",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "newValue",
+        type: "uint256",
+      },
+    ],
+    name: "setValue",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -125,7 +221,7 @@ const _abi = [
 ] as const;
 
 const _bytecode =
-  "0x608060405234801561001057600080fd5b5060405161030038038061030083398101604081905261002f916100be565b806001600160a01b03811661005e57604051631e4fbdf760e01b81526000600482015260240160405180910390fd5b6100678161006e565b50506100ee565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6000602082840312156100d057600080fd5b81516001600160a01b03811681146100e757600080fd5b9392505050565b610203806100fd6000396000f3fe608060405234801561001057600080fd5b50600436106100675760003560e01c80638da5cb5b116100505780638da5cb5b14610092578063d09de08a146100ad578063f2fde38b146100b557600080fd5b80633fa4f2451461006c578063715018a614610088575b600080fd5b61007560015481565b6040519081526020015b60405180910390f35b6100906100c8565b005b6000546040516001600160a01b03909116815260200161007f565b6100906100dc565b6100906100c33660046101c6565b6100ee565b6100d0610131565b6100da600061015e565b565b6100e4610131565b6001805481019055565b6100f6610131565b6001600160a01b03811661012557604051631e4fbdf760e01b8152600060048201526024015b60405180910390fd5b61012e8161015e565b50565b6000546001600160a01b031633146100da5760405163118cdaa760e01b815233600482015260240161011c565b600080546001600160a01b038381167fffffffffffffffffffffffff0000000000000000000000000000000000000000831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6000602082840312156101d857600080fd5b81356001600160a01b03811681146101ef57600080fd5b939250505056fea164736f6c6343000814000a";
+  "0x608060405234801561001057600080fd5b506040516104a03803806104a083398101604081905261002f91610059565b600091909155600180546001600160a01b0319166001600160a01b03909216919091179055610096565b6000806040838503121561006c57600080fd5b825160208401519092506001600160a01b038116811461008b57600080fd5b809150509250929050565b6103fb806100a56000396000f3fe608060405234801561001057600080fd5b506004361061007d5760003560e01c8063552410771161005b57806355241077146100c6578063812600df146100d95780638da5cb5b146100ec578063cc718f761461011757600080fd5b806313af40351461008257806315fe96dc146100975780633fa4f245146100aa575b600080fd5b610095610090366004610331565b610137565b005b6100956100a5366004610361565b6101c6565b6100b360005481565b6040519081526020015b60405180910390f35b6100956100d4366004610383565b610246565b6100956100e7366004610383565b6102b1565b6001546100ff906001600160a01b031681565b6040516001600160a01b0390911681526020016100bd565b6100b3610125366004610383565b60026020526000908152604090205481565b6001546001600160a01b0316331461016a5760405162461bcd60e51b81526004016101619061039c565b60405180910390fd5b6001546040516001600160a01b038084169216907fb532073b38c83145e3e5135377a08bf9aab55bc0fd7c1179cd4fb995d2a5159c90600090a3600180546001600160a01b0319166001600160a01b0392909216919091179055565b6001546001600160a01b031633146101f05760405162461bcd60e51b81526004016101619061039c565b60008281526002602090815260409182902080549084905582518181529182018490529184917f3bd36e881be2a3be10640b9875f2ff900c0dbcbc48792cf6bebddf254c541ef9910160405180910390a2505050565b6001546001600160a01b031633146102705760405162461bcd60e51b81526004016101619061039c565b60005460408051918252602082018390527f69be06033bef8d755e18606a27d6d07393aabbd1800776e503af2c8a03b7c681910160405180910390a1600055565b6001546001600160a01b031633146102db5760405162461bcd60e51b81526004016101619061039c565b806000808282546102ec91906103c7565b90915550506000546040805183815260208101929092527f230c08f549f5f9e591e87490c6c26b3715ba3bdbe74477c4ec927b160763f767910160405180910390a150565b60006020828403121561034357600080fd5b81356001600160a01b038116811461035a57600080fd5b9392505050565b6000806040838503121561037457600080fd5b50508035926020909101359150565b60006020828403121561039557600080fd5b5035919050565b60208082526011908201527021b7bab73a32b91d3737ba16b7bbb732b960791b604082015260600190565b808201808211156103e857634e487b7160e01b600052601160045260246000fd5b9291505056fea164736f6c6343000818000a";
 
 type CounterConstructorParams =
   | [signer?: Signer]
@@ -145,16 +241,18 @@ export class Counter__factory extends ContractFactory {
   }
 
   override getDeployTransaction(
-    timelock: AddressLike,
+    initial: BigNumberish,
+    _owner: AddressLike,
     overrides?: NonPayableOverrides & { from?: string }
   ): Promise<ContractDeployTransaction> {
-    return super.getDeployTransaction(timelock, overrides || {});
+    return super.getDeployTransaction(initial, _owner, overrides || {});
   }
   override deploy(
-    timelock: AddressLike,
+    initial: BigNumberish,
+    _owner: AddressLike,
     overrides?: NonPayableOverrides & { from?: string }
   ) {
-    return super.deploy(timelock, overrides || {}) as Promise<
+    return super.deploy(initial, _owner, overrides || {}) as Promise<
       Counter & {
         deploymentTransaction(): ContractTransactionResponse;
       }

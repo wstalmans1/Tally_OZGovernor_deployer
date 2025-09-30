@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.20",
+        version: "0.8.24",
         settings: {
           metadata: {
             // Not including the metadata hash
@@ -27,7 +27,7 @@ const config: HardhatUserConfig = {
           // Disable the optimizer when debugging
           optimizer: {
             enabled: true,
-            runs: 800,
+            runs: 200,
           },
         },
       },

@@ -76,6 +76,8 @@ export type { ERC721Holder } from "./@openzeppelin/contracts/token/ERC721/utils/
 export { ERC721Holder__factory } from "./factories/@openzeppelin/contracts/token/ERC721/utils/ERC721Holder__factory";
 export type { Address } from "./@openzeppelin/contracts/utils/Address";
 export { Address__factory } from "./factories/@openzeppelin/contracts/utils/Address__factory";
+export type { Create2 } from "./@openzeppelin/contracts/utils/Create2";
+export { Create2__factory } from "./factories/@openzeppelin/contracts/utils/Create2__factory";
 export type { ECDSA } from "./@openzeppelin/contracts/utils/cryptography/ECDSA";
 export { ECDSA__factory } from "./factories/@openzeppelin/contracts/utils/cryptography/ECDSA__factory";
 export type { EIP712 } from "./@openzeppelin/contracts/utils/cryptography/EIP712";
@@ -106,5 +108,7 @@ export type { OZGovernor } from "./contracts/clock/OZGovernor";
 export { OZGovernor__factory } from "./factories/contracts/clock/OZGovernor__factory";
 export type { Counter } from "./contracts/Counter";
 export { Counter__factory } from "./factories/contracts/Counter__factory";
+export type { CounterFactory } from "./contracts/CounterFactory";
+export { CounterFactory__factory } from "./factories/contracts/CounterFactory__factory";
 export type { SimpleCounter } from "./contracts/SimpleCounter";
 export { SimpleCounter__factory } from "./factories/contracts/SimpleCounter__factory";

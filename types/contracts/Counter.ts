@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -25,46 +26,99 @@ import type {
 export interface CounterInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "increment"
+      | "config"
+      | "inc"
       | "owner"
-      | "renounceOwnership"
-      | "transferOwnership"
+      | "setConfig"
+      | "setOwner"
+      | "setValue"
       | "value"
   ): FunctionFragment;
 
-  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "ConfigSet"
+      | "Incremented"
+      | "OwnerChanged"
+      | "ValueSet"
+  ): EventFragment;
 
-  encodeFunctionData(functionFragment: "increment", values?: undefined): string;
+  encodeFunctionData(functionFragment: "config", values: [BytesLike]): string;
+  encodeFunctionData(functionFragment: "inc", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "renounceOwnership",
-    values?: undefined
+    functionFragment: "setConfig",
+    values: [BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "transferOwnership",
+    functionFragment: "setOwner",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setValue",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "value", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "increment", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "config", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "inc", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "renounceOwnership",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "transferOwnership",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "setConfig", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setOwner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "setValue", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "value", data: BytesLike): Result;
 }
 
-export namespace OwnershipTransferredEvent {
-  export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
-  export type OutputTuple = [previousOwner: string, newOwner: string];
+export namespace ConfigSetEvent {
+  export type InputTuple = [
+    key: BytesLike,
+    oldVal: BigNumberish,
+    newVal: BigNumberish
+  ];
+  export type OutputTuple = [key: string, oldVal: bigint, newVal: bigint];
   export interface OutputObject {
-    previousOwner: string;
+    key: string;
+    oldVal: bigint;
+    newVal: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace IncrementedEvent {
+  export type InputTuple = [by: BigNumberish, newValue: BigNumberish];
+  export type OutputTuple = [by: bigint, newValue: bigint];
+  export interface OutputObject {
+    by: bigint;
+    newValue: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace OwnerChangedEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
     newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ValueSetEvent {
+  export type InputTuple = [oldValue: BigNumberish, newValue: BigNumberish];
+  export type OutputTuple = [oldValue: bigint, newValue: bigint];
+  export interface OutputObject {
+    oldValue: bigint;
+    newValue: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -115,17 +169,21 @@ export interface Counter extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  increment: TypedContractMethod<[], [void], "nonpayable">;
+  config: TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
+
+  inc: TypedContractMethod<[by: BigNumberish], [void], "nonpayable">;
 
   owner: TypedContractMethod<[], [string], "view">;
 
-  renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
-
-  transferOwnership: TypedContractMethod<
-    [newOwner: AddressLike],
+  setConfig: TypedContractMethod<
+    [key: BytesLike, val: BigNumberish],
     [void],
     "nonpayable"
   >;
+
+  setOwner: TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+
+  setValue: TypedContractMethod<[newValue: BigNumberish], [void], "nonpayable">;
 
   value: TypedContractMethod<[], [bigint], "view">;
 
@@ -134,39 +192,103 @@ export interface Counter extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "increment"
-  ): TypedContractMethod<[], [void], "nonpayable">;
+    nameOrSignature: "config"
+  ): TypedContractMethod<[arg0: BytesLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "inc"
+  ): TypedContractMethod<[by: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "owner"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
-    nameOrSignature: "renounceOwnership"
-  ): TypedContractMethod<[], [void], "nonpayable">;
+    nameOrSignature: "setConfig"
+  ): TypedContractMethod<
+    [key: BytesLike, val: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
-    nameOrSignature: "transferOwnership"
+    nameOrSignature: "setOwner"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setValue"
+  ): TypedContractMethod<[newValue: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "value"
   ): TypedContractMethod<[], [bigint], "view">;
 
   getEvent(
-    key: "OwnershipTransferred"
+    key: "ConfigSet"
   ): TypedContractEvent<
-    OwnershipTransferredEvent.InputTuple,
-    OwnershipTransferredEvent.OutputTuple,
-    OwnershipTransferredEvent.OutputObject
+    ConfigSetEvent.InputTuple,
+    ConfigSetEvent.OutputTuple,
+    ConfigSetEvent.OutputObject
+  >;
+  getEvent(
+    key: "Incremented"
+  ): TypedContractEvent<
+    IncrementedEvent.InputTuple,
+    IncrementedEvent.OutputTuple,
+    IncrementedEvent.OutputObject
+  >;
+  getEvent(
+    key: "OwnerChanged"
+  ): TypedContractEvent<
+    OwnerChangedEvent.InputTuple,
+    OwnerChangedEvent.OutputTuple,
+    OwnerChangedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ValueSet"
+  ): TypedContractEvent<
+    ValueSetEvent.InputTuple,
+    ValueSetEvent.OutputTuple,
+    ValueSetEvent.OutputObject
   >;
 
   filters: {
-    "OwnershipTransferred(address,address)": TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
+    "ConfigSet(bytes32,uint256,uint256)": TypedContractEvent<
+      ConfigSetEvent.InputTuple,
+      ConfigSetEvent.OutputTuple,
+      ConfigSetEvent.OutputObject
     >;
-    OwnershipTransferred: TypedContractEvent<
-      OwnershipTransferredEvent.InputTuple,
-      OwnershipTransferredEvent.OutputTuple,
-      OwnershipTransferredEvent.OutputObject
+    ConfigSet: TypedContractEvent<
+      ConfigSetEvent.InputTuple,
+      ConfigSetEvent.OutputTuple,
+      ConfigSetEvent.OutputObject
+    >;
+
+    "Incremented(uint256,uint256)": TypedContractEvent<
+      IncrementedEvent.InputTuple,
+      IncrementedEvent.OutputTuple,
+      IncrementedEvent.OutputObject
+    >;
+    Incremented: TypedContractEvent<
+      IncrementedEvent.InputTuple,
+      IncrementedEvent.OutputTuple,
+      IncrementedEvent.OutputObject
+    >;
+
+    "OwnerChanged(address,address)": TypedContractEvent<
+      OwnerChangedEvent.InputTuple,
+      OwnerChangedEvent.OutputTuple,
+      OwnerChangedEvent.OutputObject
+    >;
+    OwnerChanged: TypedContractEvent<
+      OwnerChangedEvent.InputTuple,
+      OwnerChangedEvent.OutputTuple,
+      OwnerChangedEvent.OutputObject
+    >;
+
+    "ValueSet(uint256,uint256)": TypedContractEvent<
+      ValueSetEvent.InputTuple,
+      ValueSetEvent.OutputTuple,
+      ValueSetEvent.OutputObject
+    >;
+    ValueSet: TypedContractEvent<
+      ValueSetEvent.InputTuple,
+      ValueSetEvent.OutputTuple,
+      ValueSetEvent.OutputObject
     >;
   };
 }

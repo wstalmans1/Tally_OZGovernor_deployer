@@ -10,6 +10,7 @@ export type { math };
 import type * as structs from "./structs";
 export type { structs };
 export type { Address } from "./Address";
+export type { Create2 } from "./Create2";
 export type { Nonces } from "./Nonces";
 export type { Pausable } from "./Pausable";
 export type { ShortStrings } from "./ShortStrings";

@@ -4,6 +4,7 @@
 import type * as clock from "./clock";
 export type { clock };
 export type { Counter } from "./Counter";
+export type { CounterFactory } from "./CounterFactory";
 export type { ERC20Token } from "./ERC20Token";
 export type { OZGovernor } from "./OZGovernor";
 export type { SimpleCounter } from "./SimpleCounter";

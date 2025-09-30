@@ -6,6 +6,7 @@ export * as introspection from "./introspection";
 export * as math from "./math";
 export * as structs from "./structs";
 export { Address__factory } from "./Address__factory";
+export { Create2__factory } from "./Create2__factory";
 export { Nonces__factory } from "./Nonces__factory";
 export { Pausable__factory } from "./Pausable__factory";
 export { ShortStrings__factory } from "./ShortStrings__factory";
