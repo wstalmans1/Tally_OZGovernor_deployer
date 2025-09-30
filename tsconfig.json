@@ -7,6 +7,7 @@
       "experimentalDecorators": true,
       "forceConsistentCasingInFileNames": true,
       "lib": ["es2020"],
+      "types": ["node"],
       "module": "commonjs",
       "moduleResolution": "node",
       "noImplicitAny": true,
@@ -18,5 +19,5 @@
     },
     "exclude": ["node_modules"],
     "files": ["./hardhat.config.ts"],
-    "include": ["src/**/*", "tasks/**/*", "tests/**/*", "deploy/**/*", "types/", "deploy.config.ts"]
+    "include": ["src/**/*", "tasks/**/*", "tests/**/*", "deploy/**/*", "scripts/**/*", "types/", "deploy.config.ts"]
   }
