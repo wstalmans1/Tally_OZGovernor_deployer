@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
 
 async function main() {
   console.log("=== Testing Counter Factory ===");
@@ -10,9 +10,9 @@ async function main() {
   // Deploy CounterFactory
   const Factory = await ethers.getContractFactory("CounterFactory");
   const factory = await Factory.deploy(deployer.address); // Use deployer as timelock for test
-  await factory.deployed();
+  await factory.waitForDeployment();
   
-  console.log("CounterFactory deployed at:", factory.address);
+  console.log("CounterFactory deployed at:", await factory.getAddress());
   console.log("Owner:", await factory.owner());
   
   // Test address computation

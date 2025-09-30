@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+const { ethers } = require("hardhat");
 
 async function main() {
   const timelock = process.env.TIMELOCK_ADDRESS;
@@ -9,13 +9,13 @@ async function main() {
 
   const Factory = await ethers.getContractFactory("CounterFactory");
   const factory = await Factory.deploy(timelock);
-  await factory.deployed();
+  await factory.waitForDeployment();
 
-  console.log("CounterFactory deployed at:", factory.address);
+  console.log("CounterFactory deployed at:", await factory.getAddress());
   console.log("Owner:", await factory.owner());
   
   console.log("\nTo verify on Etherscan, run:");
-  console.log(`pnpm hardhat verify --network sepolia ${factory.address} ${timelock}`);
+  console.log(`pnpm hardhat verify --network sepolia ${await factory.getAddress()} ${timelock}`);
 }
 
 main().catch((e) => { 
