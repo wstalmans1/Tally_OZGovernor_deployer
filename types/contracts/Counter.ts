@@ -176,14 +176,14 @@ export interface Counter extends BaseContract {
   owner: TypedContractMethod<[], [string], "view">;
 
   setConfig: TypedContractMethod<
-    [key: BytesLike, val: BigNumberish],
+    [k: BytesLike, v: BigNumberish],
     [void],
     "nonpayable"
   >;
 
-  setOwner: TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  setOwner: TypedContractMethod<[n: AddressLike], [void], "nonpayable">;
 
-  setValue: TypedContractMethod<[newValue: BigNumberish], [void], "nonpayable">;
+  setValue: TypedContractMethod<[n: BigNumberish], [void], "nonpayable">;
 
   value: TypedContractMethod<[], [bigint], "view">;
 
@@ -202,17 +202,13 @@ export interface Counter extends BaseContract {
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "setConfig"
-  ): TypedContractMethod<
-    [key: BytesLike, val: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  ): TypedContractMethod<[k: BytesLike, v: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setOwner"
-  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  ): TypedContractMethod<[n: AddressLike], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "setValue"
-  ): TypedContractMethod<[newValue: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[n: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "value"
   ): TypedContractMethod<[], [bigint], "view">;

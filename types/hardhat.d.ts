@@ -26,6 +26,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Ownable__factory>;
     getContractFactory(
+      name: "Ownable2Step",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Ownable2Step__factory>;
+    getContractFactory(
       name: "GovernorCountingSimple",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GovernorCountingSimple__factory>;
@@ -206,6 +210,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.DoubleEndedQueue__factory>;
     getContractFactory(
+      name: "BytecodeFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BytecodeFactory__factory>;
+    getContractFactory(
       name: "ERC20Token",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Token__factory>;
@@ -254,6 +262,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
     getContractAt(
+      name: "Ownable2Step",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Ownable2Step>;
+    getContractAt(
       name: "GovernorCountingSimple",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -478,6 +491,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.DoubleEndedQueue>;
+    getContractAt(
+      name: "BytecodeFactory",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.BytecodeFactory>;
     getContractAt(
       name: "ERC20Token",
       address: string | ethers.Addressable,
@@ -532,6 +550,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
     deployContract(
+      name: "Ownable2Step",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable2Step>;
+    deployContract(
       name: "GovernorCountingSimple",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.GovernorCountingSimple>;
@@ -711,6 +733,10 @@ declare module "hardhat/types/runtime" {
       name: "DoubleEndedQueue",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.DoubleEndedQueue>;
+    deployContract(
+      name: "BytecodeFactory",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BytecodeFactory>;
     deployContract(
       name: "ERC20Token",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -760,6 +786,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Ownable>;
     deployContract(
+      name: "Ownable2Step",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable2Step>;
+    deployContract(
       name: "GovernorCountingSimple",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -984,6 +1015,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.DoubleEndedQueue>;
+    deployContract(
+      name: "BytecodeFactory",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BytecodeFactory>;
     deployContract(
       name: "ERC20Token",
       args: any[],

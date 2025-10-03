@@ -9,7 +9,7 @@ async function main() {
   if (!factoryAddr) throw new Error("Missing FACTORY_ADDRESS");
   if (!ctrOwner) throw new Error("Missing COUNTER_OWNER");
 
-  const salt = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(saltStr));
+  const salt = ethers.keccak256(ethers.toUtf8Bytes(saltStr));
   const initial = BigInt(initialStr);
 
   console.log("=== Counter Address Computation ===");
@@ -41,7 +41,7 @@ async function main() {
   console.log("\nAction 3 - Set Config (example):");
   console.log(`  Target: ${predicted}`);
   console.log(`  Function: setConfig(bytes32,uint256)`);
-  console.log(`  Args: [${ethers.utils.keccak256(ethers.utils.toUtf8Bytes("maxStep"))}, 3]`);
+  console.log(`  Args: [${ethers.keccak256(ethers.toUtf8Bytes("maxStep"))}, 3]`);
   console.log(`  Value: 0`);
   
   console.log("\nAction 4 - Use Counter (example):");

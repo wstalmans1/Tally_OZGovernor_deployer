@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as clock from "./clock";
+export { BytecodeFactory__factory } from "./BytecodeFactory__factory";
 export { Counter__factory } from "./Counter__factory";
 export { CounterFactory__factory } from "./CounterFactory__factory";
 export { ERC20Token__factory } from "./ERC20Token__factory";

@@ -40,6 +40,7 @@ const config: HardhatUserConfig = {
       // Etherscan keys
       mainnet: vars.get("ETHERSCAN_API_KEY", process.env.ETHERSCAN_API_KEY || ""),
       sepolia: vars.get("ETHERSCAN_API_KEY", process.env.ETHERSCAN_API_KEY || ""),
+      "sepolia-blockscout": "dummy", // Blockscout doesn't require a real API key
       polygon: vars.get("POLYGONSCAN_KEY", process.env.POLYGONSCAN_KEY || ""),
       polygonMumbai: vars.get("POLYGONSCAN_KEY", process.env.POLYGONSCAN_KEY || ""),
       avalanche: vars.get("SNOWTRACE_KEY", process.env.SNOWTRACE_KEY || ""),
@@ -69,6 +70,14 @@ const config: HardhatUserConfig = {
           browserURL: "https://zkevm.polygonscan.com",
         },
       },
+      {
+        network: "sepolia-blockscout",
+        chainId: 11155111,
+        urls: {
+          apiURL: "https://eth-sepolia.blockscout.com/api",
+          browserURL: "https://eth-sepolia.blockscout.com/",
+        },
+      },
     ],
   },
   networks: {
@@ -84,6 +93,8 @@ const config: HardhatUserConfig = {
     ethereum: getChainConfig("ethereum"),
     // Sepolia testnet config
     sepolia: getChainConfig("sepolia"),
+    // Sepolia testnet config for Blockscout verification
+    "sepolia-blockscout": getChainConfig("sepolia"),
     // Polygon (Matic) - networks
     polygon: getChainConfig("polygon"),
     // Mumbai testnet config

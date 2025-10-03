@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type * as clock from "./clock";
 export type { clock };
+export type { BytecodeFactory } from "./BytecodeFactory";
 export type { Counter } from "./Counter";
 export type { CounterFactory } from "./CounterFactory";
 export type { ERC20Token } from "./ERC20Token";
