@@ -37,6 +37,29 @@ contract BytecodeFactory is Ownable2Step {
         emit Deployed(addr, bytes32(0), false, msg.value);
     }
 
+    /// @notice Deploy using CREATE and immediately register the deployment in a registry. Payable: forwards msg.value.
+    function deployAndRegister(
+        bytes calldata initcode,
+        address registry,
+        bytes32 kind,
+        uint64 version,
+        string calldata label,
+        string calldata uri
+    ) external payable onlyOwner returns (address addr) {
+        addr = this.deploy{value: msg.value}(initcode);
+        bytes32 initHash = keccak256(initcode);
+        IContractRegistry(registry).register(
+            addr,
+            kind,
+            address(this),
+            bytes32(0),
+            initHash,
+            version,
+            label,
+            uri
+        );
+    }
+
     /// @notice Deploy using CREATE2 at deterministic address. Payable: forwards msg.value.
     function deployCreate2(bytes32 salt, bytes calldata initcode) external payable onlyOwner returns (address addr) {
         if (initcode.length == 0) revert EmptyInitcode();

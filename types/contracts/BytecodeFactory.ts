@@ -29,6 +29,7 @@ export interface BytecodeFactoryInterface extends Interface {
       | "acceptOwnership"
       | "computeAddress"
       | "deploy"
+      | "deployAndRegister"
       | "deployCreate2"
       | "deployCreate2AndRegister"
       | "initcodeHash"
@@ -54,6 +55,10 @@ export interface BytecodeFactoryInterface extends Interface {
     values: [BytesLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "deploy", values: [BytesLike]): string;
+  encodeFunctionData(
+    functionFragment: "deployAndRegister",
+    values: [BytesLike, AddressLike, BytesLike, BigNumberish, string, string]
+  ): string;
   encodeFunctionData(
     functionFragment: "deployCreate2",
     values: [BytesLike, BytesLike]
@@ -97,6 +102,10 @@ export interface BytecodeFactoryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "deploy", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "deployAndRegister",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "deployCreate2",
     data: BytesLike
@@ -228,6 +237,19 @@ export interface BytecodeFactory extends BaseContract {
 
   deploy: TypedContractMethod<[initcode: BytesLike], [string], "payable">;
 
+  deployAndRegister: TypedContractMethod<
+    [
+      initcode: BytesLike,
+      registry: AddressLike,
+      kind: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
+    [string],
+    "payable"
+  >;
+
   deployCreate2: TypedContractMethod<
     [salt: BytesLike, initcode: BytesLike],
     [string],
@@ -279,6 +301,20 @@ export interface BytecodeFactory extends BaseContract {
   getFunction(
     nameOrSignature: "deploy"
   ): TypedContractMethod<[initcode: BytesLike], [string], "payable">;
+  getFunction(
+    nameOrSignature: "deployAndRegister"
+  ): TypedContractMethod<
+    [
+      initcode: BytesLike,
+      registry: AddressLike,
+      kind: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
+    [string],
+    "payable"
+  >;
   getFunction(
     nameOrSignature: "deployCreate2"
   ): TypedContractMethod<
