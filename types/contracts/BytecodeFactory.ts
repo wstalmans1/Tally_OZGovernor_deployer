@@ -30,6 +30,7 @@ export interface BytecodeFactoryInterface extends Interface {
       | "computeAddress"
       | "deploy"
       | "deployCreate2"
+      | "deployCreate2AndRegister"
       | "initcodeHash"
       | "owner"
       | "pendingOwner"
@@ -56,6 +57,18 @@ export interface BytecodeFactoryInterface extends Interface {
   encodeFunctionData(
     functionFragment: "deployCreate2",
     values: [BytesLike, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "deployCreate2AndRegister",
+    values: [
+      BytesLike,
+      BytesLike,
+      AddressLike,
+      BytesLike,
+      BigNumberish,
+      string,
+      string
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "initcodeHash",
@@ -86,6 +99,10 @@ export interface BytecodeFactoryInterface extends Interface {
   decodeFunctionResult(functionFragment: "deploy", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "deployCreate2",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "deployCreate2AndRegister",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -217,6 +234,20 @@ export interface BytecodeFactory extends BaseContract {
     "payable"
   >;
 
+  deployCreate2AndRegister: TypedContractMethod<
+    [
+      salt: BytesLike,
+      initcode: BytesLike,
+      registry: AddressLike,
+      kind: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
+    [string],
+    "payable"
+  >;
+
   initcodeHash: TypedContractMethod<[initcode: BytesLike], [string], "view">;
 
   owner: TypedContractMethod<[], [string], "view">;
@@ -252,6 +283,21 @@ export interface BytecodeFactory extends BaseContract {
     nameOrSignature: "deployCreate2"
   ): TypedContractMethod<
     [salt: BytesLike, initcode: BytesLike],
+    [string],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "deployCreate2AndRegister"
+  ): TypedContractMethod<
+    [
+      salt: BytesLike,
+      initcode: BytesLike,
+      registry: AddressLike,
+      kind: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
     [string],
     "payable"
   >;

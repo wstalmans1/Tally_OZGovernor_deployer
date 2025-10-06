@@ -3,9 +3,12 @@
 /* eslint-disable */
 export * as clock from "./clock";
 export { BytecodeFactory__factory } from "./BytecodeFactory__factory";
+export { ContractRegistry__factory } from "./ContractRegistry__factory";
 export { Counter__factory } from "./Counter__factory";
 export { CounterFactory__factory } from "./CounterFactory__factory";
 export { ERC20Token__factory } from "./ERC20Token__factory";
+export { IContractRegistry__factory } from "./IContractRegistry__factory";
+export { Kinds__factory } from "./Kinds__factory";
 export { OZGovernor__factory } from "./OZGovernor__factory";
 export { SimpleCounter__factory } from "./SimpleCounter__factory";
 export { TimelockController__factory } from "./TimelockController__factory";

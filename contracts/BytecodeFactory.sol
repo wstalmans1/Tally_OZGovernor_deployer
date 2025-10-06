@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IContractRegistry} from "./IContractRegistry.sol";
 
 /**
  * @title BytecodeFactory
@@ -49,6 +50,30 @@ contract BytecodeFactory is Ownable2Step {
         }
         if (addr == address(0)) revert DeployFailed();
         emit Deployed(addr, salt, true, msg.value);
+    }
+
+    /// @notice Deploy using CREATE2 and immediately register the deployment in a registry. Payable: forwards msg.value.
+    function deployCreate2AndRegister(
+        bytes32 salt,
+        bytes calldata initcode,
+        address registry,
+        bytes32 kind,
+        uint64 version,
+        string calldata label,
+        string calldata uri
+    ) external payable onlyOwner returns (address addr) {
+        addr = this.deployCreate2{value: msg.value}(salt, initcode);
+        bytes32 initHash = keccak256(initcode);
+        IContractRegistry(registry).register(
+            addr,
+            kind,
+            address(this),
+            salt,
+            initHash,
+            version,
+            label,
+            uri
+        );
     }
 
     /// @notice Compute the address a CREATE2 deploy would use for the given salt+initcode.
