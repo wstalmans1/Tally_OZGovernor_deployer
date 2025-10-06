@@ -1,10 +1,13 @@
-# BytecodeFactory - General-Purpose DAO Contract Deployer
+# BytecodeFactory + Registry – DAO Deploy-and-Register System
 
-This implementation provides a **DAO-owned factory** that can deploy **any contract** via CREATE or CREATE2, with support for chaining follow-up actions in the same Tally proposal.
+This implementation provides a **DAO-owned factory** that can deploy **any contract** via CREATE or CREATE2, with support for chaining follow-up actions in the same Tally proposal. It now includes a **ContractRegistry** so every deployment can be recorded on-chain in the same action.
 
 ## Overview
 
 - **`BytecodeFactory.sol`**: General-purpose factory owned by Timelock for deploying any contract
+- **`ContractRegistry.sol`**: On-chain index of DAO deployments (writeable via role)
+- **`IContractRegistry.sol`**: Minimal registry interface used by the factory
+- **`Kinds.sol`**: Common `bytes32` tags to categorize deployments
 - **`Counter.sol`**: Example contract for demonstration
 - **Scripts**: Deploy factory, build initcode for any contract, compute CREATE2 addresses
 
@@ -15,9 +18,10 @@ This implementation provides a **DAO-owned factory** that can deploy **any contr
 - ✅ **Ownable2Step** for secure ownership transfer to DAO
 - ✅ **ETH forwarding** to contract constructors
 - ✅ **Same-proposal chaining** - deploy and configure in one proposal
+- ✅ **On-chain registry** - deploy + register in one call
 - ✅ **Gas efficient** - uses raw assembly for deployment
 
-## Quick Start
+## Quick Start (How-To)
 
 ### 1. Set Environment Variables
 
@@ -28,32 +32,44 @@ export ETHERSCAN_API_KEY="YOUR_ETHERSCAN_KEY"
 export TIMELOCK_ADDRESS="0xYourDaoTimelock"
 ```
 
-### 2. Deploy the Factory
+### 2. Deploy (or Re-deploy) the Factory
 
 ```bash
 # Compile contracts
 pnpm hardhat compile
 
-# Deploy BytecodeFactory (sets Timelock as pending owner)
+# Deploy BytecodeFactory (sets Timelock as owner immediately)
 pnpm hardhat run scripts/deployBytecodeFactory.ts --network sepolia
 
 # Save the factory address
 export FACTORY_ADDRESS="0x...printed..."
 
-# Verify the factory
+# Verify the factory (Blockscout)
 pnpm hardhat verify --network sepolia $FACTORY_ADDRESS $TIMELOCK_ADDRESS
+
+# (Optional) Verify on Etherscan too
+# We force Etherscan verification by using a dedicated config at runtime
+npx hardhat verify --config hardhat.config.etherscan.ts --network sepolia $FACTORY_ADDRESS $TIMELOCK_ADDRESS
 ```
 
-### 3. Transfer Ownership to DAO
+Note: The factory constructor sets the Timelock as owner immediately, so no ownership transfer step is required.
 
-Create a Tally proposal to call `acceptOwnership()` on the factory:
+### 3. Deploy the Registry and Grant Role
 
-- **Target**: `$FACTORY_ADDRESS`
-- **Function**: `acceptOwnership()`
-- **Args**: `[]`
-- **Value**: `0`
+```bash
+# Deploy ContractRegistry with Timelock as DEFAULT_ADMIN_ROLE
+pnpm hardhat run scripts/deployRegistry.ts --network sepolia
 
-After execution, only governance can deploy contracts!
+# Save the printed registry address
+export REGISTRY_ADDRESS="0x...printed..."
+
+# Grant the REGISTRAR_ROLE to the factory (must be executed by Timelock/admin)
+REGISTRY_ADDRESS=$REGISTRY_ADDRESS FACTORY_ADDRESS=$FACTORY_ADDRESS \
+pnpm hardhat run scripts/grantRegistrar.ts --network sepolia
+
+# If governance controls the admin, do it via a Tally proposal:
+#   ContractRegistry.grantRole(keccak256("REGISTRAR_ROLE"), $FACTORY_ADDRESS)
+```
 
 ## Deploy Any Contract via DAO
 
@@ -79,7 +95,25 @@ pnpm hardhat run scripts/computeCreate2Address.ts --network sepolia
 export PREDICTED_ADDRESS="0x...."
 ```
 
-### Step 3: Create Tally Proposal with Chained Actions
+### Step 3A: Single-call Deploy + Register (recommended)
+
+Call the factory’s register-enabled deployer:
+
+- **Target**: `$FACTORY_ADDRESS`
+- **Function**: `deployCreate2AndRegister(bytes32,bytes,address,bytes32,uint64,string,string)`
+- **Args**:
+  - `salt`: `keccak256(utf8("counter-1"))`
+  - `initcode`: `$INITCODE`
+  - `registry`: `$REGISTRY_ADDRESS`
+  - `kind`: `keccak256("COUNTER")` (or use constant from `Kinds.sol` when encoding off-chain)
+  - `version`: `1`
+  - `label`: `"Counter #1"`
+  - `uri`: `"ipfs://..."`
+- **Value**: `0`
+
+Optionally add follow-up actions (e.g., `setValue`, `setConfig`, `inc`) using the predicted address.
+
+### Step 3B: Chained Actions (manual register alternative)
 
 **Action 1 - Deploy Contract (CREATE2)**
 - **Target**: `$FACTORY_ADDRESS`
@@ -104,6 +138,8 @@ export PREDICTED_ADDRESS="0x...."
 - **Function**: `inc(uint256)`
 - **Args**: `[1]`
 - **Value**: `0`
+
+Add a separate action to call `ContractRegistry.register(...)` if you prefer explicit registration instead of the factory’s combined method.
 
 ## Advanced Usage
 
@@ -137,9 +173,23 @@ export ARGS='[1000000000000000000]'  # 1 ETH in wei
 
 - `deploy(bytes initcode)` - Deploy using CREATE
 - `deployCreate2(bytes32 salt, bytes initcode)` - Deploy using CREATE2
+- `deployCreate2AndRegister(bytes32 salt, bytes initcode, address registry, bytes32 kind, uint64 version, string label, string uri)` - Deploy and record in registry in one call
 - `computeAddress(bytes32 salt, bytes initcode)` - Predict CREATE2 address
 - `initcodeHash(bytes initcode)` - Get initcode hash
 - `acceptOwnership()` - Accept ownership transfer (Timelock only)
+
+### ContractRegistry
+
+- `register(address addr, bytes32 kind, address factory, bytes32 salt, bytes32 initCodeHash, uint64 version, string label, string uri)`
+- `updateURI(address addr, string newURI)` (admin only)
+- `updateLabel(address addr, string newLabel)` (admin only)
+- `setDeprecated(address addr, bool)` (admin only)
+
+Views:
+- `getByAddress(address)` returns full stored entry
+- `listByKind(bytes32)` returns addresses
+- `getLatest(bytes32)` returns latest address for a kind
+- `getBySalt(bytes32)` returns address deployed with a specific salt
 
 ### Counter (Example)
 
@@ -162,6 +212,7 @@ export ARGS='[1000000000000000000]'  # 1 ETH in wei
 - **Ownership Issues**: Verify Timelock has accepted ownership
 - **Address Mismatch**: Check salt string and initcode match exactly
 - **Deployment Fails**: Verify initcode is valid and constructor args are correct
+- **Registry writes revert**: Ensure Factory has `REGISTRAR_ROLE` on the registry and the Timelock is calling the factory method.
 
 ## Examples
 
@@ -200,3 +251,16 @@ pnpm hardhat run scripts/computeCreate2Address.ts --network sepolia
 ```
 
 This system provides maximum flexibility for DAO governance while maintaining security through proper ownership controls.
+
+---
+
+## TODO / Ops Checklist
+
+- [ ] Deploy `BytecodeFactory` with `TIMELOCK_ADDRESS`
+- [ ] Verify on Blockscout (and Etherscan if desired)
+- [ ] Deploy `ContractRegistry` with `TIMELOCK_ADDRESS`
+- [ ] Grant `REGISTRAR_ROLE` to `FACTORY_ADDRESS`
+- [ ] Build `INITCODE` for target contract
+- [ ] Compute predicted `CREATE2` address
+- [ ] Create Tally proposal calling `deployCreate2AndRegister(...)`
+- [ ] (Optional) Add follow-up configuration actions in the same proposal
