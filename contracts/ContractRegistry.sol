@@ -52,6 +52,23 @@ contract ContractRegistry is AccessControl, IContractRegistry {
         id = _id(addr);
         require(byId[id].addr == address(0), "exists");
 
+        _storeRegistration(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
+        _updateIndexes(kind, salt, addr);
+        
+        emit Registered(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
+    }
+
+    function _storeRegistration(
+        bytes32 id,
+        address addr,
+        bytes32 kind,
+        address factory,
+        bytes32 salt,
+        bytes32 initCodeHash,
+        uint64 version,
+        string calldata label,
+        string calldata uri
+    ) internal {
         byId[id] = Store({
             addr: addr,
             kind: kind,
@@ -64,13 +81,13 @@ contract ContractRegistry is AccessControl, IContractRegistry {
             label: label,
             uri: uri
         });
+    }
 
+    function _updateIndexes(bytes32 kind, bytes32 salt, address addr) internal {
         byKind[kind].push(addr);
         latestByKind[kind] = addr;
         if (salt != bytes32(0)) bySalt[salt] = addr;
         allAddresses.push(addr);
-
-        emit Registered(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
     }
 
     function updateURI(address addr, string calldata newURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -109,23 +126,8 @@ contract ContractRegistry is AccessControl, IContractRegistry {
         id = _id(addr);
         require(byId[id].addr == address(0), "exists");
 
-        byId[id] = Store({
-            addr: addr,
-            kind: kind,
-            factory: factory,
-            salt: salt,
-            initCodeHash: initCodeHash,
-            version: version,
-            createdAt: uint64(block.timestamp),
-            deprecated: false,
-            label: label,
-            uri: uri
-        });
-
-        byKind[kind].push(addr);
-        latestByKind[kind] = addr;
-        if (salt != bytes32(0)) bySalt[salt] = addr;
-        allAddresses.push(addr);
+        _storeRegistration(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
+        _updateIndexes(kind, salt, addr);
 
         emit Registered(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
     }
@@ -150,9 +152,8 @@ contract ContractRegistry is AccessControl, IContractRegistry {
         addrs = new address[](len);
         labels = new string[](len);
         for (uint256 i = 0; i < len; i++) {
-            address addr = allAddresses[start + i];
-            addrs[i] = addr;
-            labels[i] = byId[_id(addr)].label;
+            addrs[i] = allAddresses[start + i];
+            labels[i] = byId[_id(addrs[i])].label;
         }
     }
     

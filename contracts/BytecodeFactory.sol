@@ -47,17 +47,7 @@ contract BytecodeFactory is Ownable2Step {
         string calldata uri
     ) external payable onlyOwner returns (address addr) {
         addr = this.deploy{value: msg.value}(initcode);
-        bytes32 initHash = keccak256(initcode);
-        IContractRegistry(registry).register(
-            addr,
-            kind,
-            address(this),
-            bytes32(0),
-            initHash,
-            version,
-            label,
-            uri
-        );
+        _registerDeployment(registry, addr, kind, version, label, uri, bytes32(0), initcode);
     }
 
     /// @notice Deploy using CREATE2 at deterministic address. Payable: forwards msg.value.
@@ -86,17 +76,7 @@ contract BytecodeFactory is Ownable2Step {
         string calldata uri
     ) external payable onlyOwner returns (address addr) {
         addr = this.deployCreate2{value: msg.value}(salt, initcode);
-        bytes32 initHash = keccak256(initcode);
-        IContractRegistry(registry).register(
-            addr,
-            kind,
-            address(this),
-            salt,
-            initHash,
-            version,
-            label,
-            uri
-        );
+        _registerDeployment(registry, addr, kind, version, label, uri, salt, initcode);
     }
 
     /// @notice Compute the address a CREATE2 deploy would use for the given salt+initcode.
@@ -108,6 +88,30 @@ contract BytecodeFactory is Ownable2Step {
     /// @notice Helper to obtain keccak256(initcode) client-side checks.
     function initcodeHash(bytes calldata initcode) external pure returns (bytes32) {
         return keccak256(initcode);
+    }
+
+    /// @notice Internal helper to register deployment with reduced stack usage
+    function _registerDeployment(
+        address registry,
+        address addr,
+        bytes32 kind,
+        uint64 version,
+        string calldata label,
+        string calldata uri,
+        bytes32 salt,
+        bytes calldata initcode
+    ) internal {
+        bytes32 initHash = keccak256(initcode);
+        IContractRegistry(registry).register(
+            addr,
+            kind,
+            address(this),
+            salt,
+            initHash,
+            version,
+            label,
+            uri
+        );
     }
 
     // Ownable2Step:
