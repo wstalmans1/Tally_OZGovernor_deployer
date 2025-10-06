@@ -82,6 +82,7 @@ export interface ContractRegistryInterface extends Interface {
       | "listAllSliceWithLabels"
       | "listByKind"
       | "register"
+      | "registerManually"
       | "renounceRole"
       | "revokeRole"
       | "setDeprecated"
@@ -174,6 +175,19 @@ export interface ContractRegistryInterface extends Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "registerManually",
+    values: [
+      AddressLike,
+      BytesLike,
+      AddressLike,
+      BytesLike,
+      BytesLike,
+      BigNumberish,
+      string,
+      string
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "renounceRole",
     values: [BytesLike, AddressLike]
   ): string;
@@ -243,6 +257,10 @@ export interface ContractRegistryInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "listByKind", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "registerManually",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -543,6 +561,21 @@ export interface ContractRegistry extends BaseContract {
     "nonpayable"
   >;
 
+  registerManually: TypedContractMethod<
+    [
+      addr: AddressLike,
+      kind: BytesLike,
+      factory: AddressLike,
+      salt: BytesLike,
+      initCodeHash: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
+    [string],
+    "nonpayable"
+  >;
+
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
     [void],
@@ -687,6 +720,22 @@ export interface ContractRegistry extends BaseContract {
   ): TypedContractMethod<[kind: BytesLike], [string[]], "view">;
   getFunction(
     nameOrSignature: "register"
+  ): TypedContractMethod<
+    [
+      addr: AddressLike,
+      kind: BytesLike,
+      factory: AddressLike,
+      salt: BytesLike,
+      initCodeHash: BytesLike,
+      version: BigNumberish,
+      label: string,
+      uri: string
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "registerManually"
   ): TypedContractMethod<
     [
       addr: AddressLike,

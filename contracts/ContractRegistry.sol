@@ -94,6 +94,42 @@ contract ContractRegistry is AccessControl, IContractRegistry {
         emit Deprecated(id, dep);
     }
 
+    /// @notice Manually register a contract (admin only) - for contracts not deployed via factory
+    function registerManually(
+        address addr,
+        bytes32 kind,
+        address factory,
+        bytes32 salt,
+        bytes32 initCodeHash,
+        uint64 version,
+        string calldata label,
+        string calldata uri
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) returns (bytes32 id) {
+        require(addr != address(0), "zero addr");
+        id = _id(addr);
+        require(byId[id].addr == address(0), "exists");
+
+        byId[id] = Store({
+            addr: addr,
+            kind: kind,
+            factory: factory,
+            salt: salt,
+            initCodeHash: initCodeHash,
+            version: version,
+            createdAt: uint64(block.timestamp),
+            deprecated: false,
+            label: label,
+            uri: uri
+        });
+
+        byKind[kind].push(addr);
+        latestByKind[kind] = addr;
+        if (salt != bytes32(0)) bySalt[salt] = addr;
+        allAddresses.push(addr);
+
+        emit Registered(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
+    }
+
     function getByAddress(address addr) external view returns (Store memory) { return byId[_id(addr)]; }
     function listByKind(bytes32 kind) external view returns (address[] memory) { return byKind[kind]; }
     function getLatest(bytes32 kind) external view returns (address) { return latestByKind[kind]; }
