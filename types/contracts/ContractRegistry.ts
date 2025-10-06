@@ -67,6 +67,7 @@ export interface ContractRegistryInterface extends Interface {
     nameOrSignature:
       | "DEFAULT_ADMIN_ROLE"
       | "REGISTRAR_ROLE"
+      | "allAddresses"
       | "byId"
       | "byKind"
       | "bySalt"
@@ -77,12 +78,15 @@ export interface ContractRegistryInterface extends Interface {
       | "grantRole"
       | "hasRole"
       | "latestByKind"
+      | "listAllSlice"
+      | "listAllSliceWithLabels"
       | "listByKind"
       | "register"
       | "renounceRole"
       | "revokeRole"
       | "setDeprecated"
       | "supportsInterface"
+      | "totalCount"
       | "updateLabel"
       | "updateURI"
   ): FunctionFragment;
@@ -105,6 +109,10 @@ export interface ContractRegistryInterface extends Interface {
   encodeFunctionData(
     functionFragment: "REGISTRAR_ROLE",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "allAddresses",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "byId", values: [BytesLike]): string;
   encodeFunctionData(
@@ -141,6 +149,14 @@ export interface ContractRegistryInterface extends Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "listAllSlice",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "listAllSliceWithLabels",
+    values: [BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "listByKind",
     values: [BytesLike]
   ): string;
@@ -174,6 +190,10 @@ export interface ContractRegistryInterface extends Interface {
     values: [BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "totalCount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateLabel",
     values: [AddressLike, string]
   ): string;
@@ -188,6 +208,10 @@ export interface ContractRegistryInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "REGISTRAR_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "allAddresses",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "byId", data: BytesLike): Result;
@@ -209,6 +233,14 @@ export interface ContractRegistryInterface extends Interface {
     functionFragment: "latestByKind",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "listAllSlice",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "listAllSliceWithLabels",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "listByKind", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
   decodeFunctionResult(
@@ -224,6 +256,7 @@ export interface ContractRegistryInterface extends Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "totalCount", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateLabel",
     data: BytesLike
@@ -415,6 +448,8 @@ export interface ContractRegistry extends BaseContract {
 
   REGISTRAR_ROLE: TypedContractMethod<[], [string], "view">;
 
+  allAddresses: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+
   byId: TypedContractMethod<
     [arg0: BytesLike],
     [
@@ -479,6 +514,18 @@ export interface ContractRegistry extends BaseContract {
 
   latestByKind: TypedContractMethod<[arg0: BytesLike], [string], "view">;
 
+  listAllSlice: TypedContractMethod<
+    [start: BigNumberish, end: BigNumberish],
+    [string[]],
+    "view"
+  >;
+
+  listAllSliceWithLabels: TypedContractMethod<
+    [start: BigNumberish, end: BigNumberish],
+    [[string[], string[]] & { addrs: string[]; labels: string[] }],
+    "view"
+  >;
+
   listByKind: TypedContractMethod<[kind: BytesLike], [string[]], "view">;
 
   register: TypedContractMethod<
@@ -520,6 +567,8 @@ export interface ContractRegistry extends BaseContract {
     "view"
   >;
 
+  totalCount: TypedContractMethod<[], [bigint], "view">;
+
   updateLabel: TypedContractMethod<
     [addr: AddressLike, newLabel: string],
     [void],
@@ -542,6 +591,9 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "REGISTRAR_ROLE"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "allAddresses"
+  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
   getFunction(
     nameOrSignature: "byId"
   ): TypedContractMethod<
@@ -617,6 +669,20 @@ export interface ContractRegistry extends BaseContract {
     nameOrSignature: "latestByKind"
   ): TypedContractMethod<[arg0: BytesLike], [string], "view">;
   getFunction(
+    nameOrSignature: "listAllSlice"
+  ): TypedContractMethod<
+    [start: BigNumberish, end: BigNumberish],
+    [string[]],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "listAllSliceWithLabels"
+  ): TypedContractMethod<
+    [start: BigNumberish, end: BigNumberish],
+    [[string[], string[]] & { addrs: string[]; labels: string[] }],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "listByKind"
   ): TypedContractMethod<[kind: BytesLike], [string[]], "view">;
   getFunction(
@@ -659,6 +725,9 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "totalCount"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "updateLabel"
   ): TypedContractMethod<

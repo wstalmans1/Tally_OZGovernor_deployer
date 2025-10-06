@@ -24,6 +24,7 @@ contract ContractRegistry is AccessControl, IContractRegistry {
     mapping(bytes32 => address[]) public byKind;
     mapping(bytes32 => address) public latestByKind;
     mapping(bytes32 => address) public bySalt;
+    address[] public allAddresses;
 
     event UpdatedURI(bytes32 indexed id, string newURI);
     event UpdatedLabel(bytes32 indexed id, string newLabel);
@@ -67,6 +68,7 @@ contract ContractRegistry is AccessControl, IContractRegistry {
         byKind[kind].push(addr);
         latestByKind[kind] = addr;
         if (salt != bytes32(0)) bySalt[salt] = addr;
+        allAddresses.push(addr);
 
         emit Registered(id, addr, kind, factory, salt, initCodeHash, version, label, uri);
     }
@@ -96,6 +98,29 @@ contract ContractRegistry is AccessControl, IContractRegistry {
     function listByKind(bytes32 kind) external view returns (address[] memory) { return byKind[kind]; }
     function getLatest(bytes32 kind) external view returns (address) { return latestByKind[kind]; }
     function getBySalt(bytes32 salt) external view returns (address) { return bySalt[salt]; }
+    
+    function listAllSlice(uint256 start, uint256 end) external view returns (address[] memory addrs) {
+        require(start <= end && end <= allAddresses.length, "invalid range");
+        uint256 len = end - start;
+        addrs = new address[](len);
+        for (uint256 i = 0; i < len; i++) {
+            addrs[i] = allAddresses[start + i];
+        }
+    }
+    
+    function listAllSliceWithLabels(uint256 start, uint256 end) external view returns (address[] memory addrs, string[] memory labels) {
+        require(start <= end && end <= allAddresses.length, "invalid range");
+        uint256 len = end - start;
+        addrs = new address[](len);
+        labels = new string[](len);
+        for (uint256 i = 0; i < len; i++) {
+            address addr = allAddresses[start + i];
+            addrs[i] = addr;
+            labels[i] = byId[_id(addr)].label;
+        }
+    }
+    
+    function totalCount() external view returns (uint256) { return allAddresses.length; }
 }
 
 
