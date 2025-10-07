@@ -2,15 +2,13 @@
 pragma solidity ^0.8.24;
 
 interface IContractRegistry {
-    struct Entry {
+    struct Registration {
         address addr;
         bytes32 kind;
         address factory;
         bytes32 salt;
         bytes32 initCodeHash;
         uint64  version;
-        uint64  createdAt;
-        bool    deprecated;
         string  label;
         string  uri;
     }
@@ -27,16 +25,5 @@ interface IContractRegistry {
         string  uri
     );
 
-    function register(
-        address addr,
-        bytes32 kind,
-        address factory,
-        bytes32 salt,
-        bytes32 initCodeHash,
-        uint64  version,
-        string calldata label,
-        string calldata uri
-    ) external returns (bytes32 id);
+    function register(Registration calldata r) external returns (bytes32 id);
 }
-
-

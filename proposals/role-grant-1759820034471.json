@@ -1,0 +1,11 @@
+{
+  "contractAddress": "0x793DB78E2d4dD68564735743FABc45482e6B9eeB",
+  "functionName": "grantRole",
+  "parameters": {
+    "role": "0xedcc084d3dcd65a1f7f23c65c46722faca6953d28e43150a467cf43e5c309238",
+    "account": "0x599C8688d802EC99E599BFA31430e0038fD7AdB6"
+  },
+  "calldata": "0x2f2ff15dedcc084d3dcd65a1f7f23c65c46722faca6953d28e43150a467cf43e5c309238000000000000000000000000599c8688d802ec99e599bfa31430e0038fd7adb6",
+  "description": "Grant REGISTRAR_ROLE to WorkingFactory",
+  "timestamp": 1759820034471
+}

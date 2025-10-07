@@ -62,6 +62,39 @@ export declare namespace ContractRegistry {
   };
 }
 
+export declare namespace IContractRegistry {
+  export type RegistrationStruct = {
+    addr: AddressLike;
+    kind: BytesLike;
+    factory: AddressLike;
+    salt: BytesLike;
+    initCodeHash: BytesLike;
+    version: BigNumberish;
+    label: string;
+    uri: string;
+  };
+
+  export type RegistrationStructOutput = [
+    addr: string,
+    kind: string,
+    factory: string,
+    salt: string,
+    initCodeHash: string,
+    version: bigint,
+    label: string,
+    uri: string
+  ] & {
+    addr: string;
+    kind: string;
+    factory: string;
+    salt: string;
+    initCodeHash: string;
+    version: bigint;
+    label: string;
+    uri: string;
+  };
+}
+
 export interface ContractRegistryInterface extends Interface {
   getFunction(
     nameOrSignature:
@@ -82,7 +115,6 @@ export interface ContractRegistryInterface extends Interface {
       | "listAllSliceWithLabels"
       | "listByKind"
       | "register"
-      | "registerManually"
       | "renounceRole"
       | "revokeRole"
       | "setDeprecated"
@@ -163,29 +195,7 @@ export interface ContractRegistryInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "register",
-    values: [
-      AddressLike,
-      BytesLike,
-      AddressLike,
-      BytesLike,
-      BytesLike,
-      BigNumberish,
-      string,
-      string
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "registerManually",
-    values: [
-      AddressLike,
-      BytesLike,
-      AddressLike,
-      BytesLike,
-      BytesLike,
-      BigNumberish,
-      string,
-      string
-    ]
+    values: [IContractRegistry.RegistrationStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -257,10 +267,6 @@ export interface ContractRegistryInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "listByKind", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "registerManually",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -507,7 +513,7 @@ export interface ContractRegistry extends BaseContract {
   bySalt: TypedContractMethod<[arg0: BytesLike], [string], "view">;
 
   getByAddress: TypedContractMethod<
-    [addr: AddressLike],
+    [addr_: AddressLike],
     [ContractRegistry.StoreStructOutput],
     "view"
   >;
@@ -547,31 +553,7 @@ export interface ContractRegistry extends BaseContract {
   listByKind: TypedContractMethod<[kind: BytesLike], [string[]], "view">;
 
   register: TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
-    [string],
-    "nonpayable"
-  >;
-
-  registerManually: TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
+    [r: IContractRegistry.RegistrationStruct],
     [string],
     "nonpayable"
   >;
@@ -589,7 +571,7 @@ export interface ContractRegistry extends BaseContract {
   >;
 
   setDeprecated: TypedContractMethod<
-    [addr: AddressLike, dep: boolean],
+    [addr_: AddressLike, dep: boolean],
     [void],
     "nonpayable"
   >;
@@ -603,13 +585,13 @@ export interface ContractRegistry extends BaseContract {
   totalCount: TypedContractMethod<[], [bigint], "view">;
 
   updateLabel: TypedContractMethod<
-    [addr: AddressLike, newLabel: string],
+    [addr_: AddressLike, newLabel: string],
     [void],
     "nonpayable"
   >;
 
   updateURI: TypedContractMethod<
-    [addr: AddressLike, newURI: string],
+    [addr_: AddressLike, newURI: string],
     [void],
     "nonpayable"
   >;
@@ -671,7 +653,7 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "getByAddress"
   ): TypedContractMethod<
-    [addr: AddressLike],
+    [addr_: AddressLike],
     [ContractRegistry.StoreStructOutput],
     "view"
   >;
@@ -721,32 +703,7 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "register"
   ): TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
-    [string],
-    "nonpayable"
-  >;
-  getFunction(
-    nameOrSignature: "registerManually"
-  ): TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
+    [r: IContractRegistry.RegistrationStruct],
     [string],
     "nonpayable"
   >;
@@ -767,7 +724,7 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "setDeprecated"
   ): TypedContractMethod<
-    [addr: AddressLike, dep: boolean],
+    [addr_: AddressLike, dep: boolean],
     [void],
     "nonpayable"
   >;
@@ -780,14 +737,14 @@ export interface ContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "updateLabel"
   ): TypedContractMethod<
-    [addr: AddressLike, newLabel: string],
+    [addr_: AddressLike, newLabel: string],
     [void],
     "nonpayable"
   >;
   getFunction(
     nameOrSignature: "updateURI"
   ): TypedContractMethod<
-    [addr: AddressLike, newURI: string],
+    [addr_: AddressLike, newURI: string],
     [void],
     "nonpayable"
   >;

@@ -238,6 +238,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Token__factory>;
     getContractFactory(
+      name: "FixedFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FixedFactory__factory>;
+    getContractFactory(
       name: "IContractRegistry",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IContractRegistry__factory>;
@@ -246,17 +250,25 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Kinds__factory>;
     getContractFactory(
+      name: "OwnedWorkingFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.OwnedWorkingFactory__factory>;
+    getContractFactory(
       name: "OZGovernor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.OZGovernor__factory>;
     getContractFactory(
-      name: "SimpleCounter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.SimpleCounter__factory>;
-    getContractFactory(
       name: "TimelockController",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TimelockController__factory>;
+    getContractFactory(
+      name: "WorkingFactory",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WorkingFactory__factory>;
+    getContractFactory(
+      name: "WorkingFactoryRegistrar",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.WorkingFactoryRegistrar__factory>;
 
     getContractAt(
       name: "AccessControl",
@@ -539,6 +551,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20Token>;
     getContractAt(
+      name: "FixedFactory",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FixedFactory>;
+    getContractAt(
       name: "IContractRegistry",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -549,20 +566,30 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.Kinds>;
     getContractAt(
+      name: "OwnedWorkingFactory",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.OwnedWorkingFactory>;
+    getContractAt(
       name: "OZGovernor",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.OZGovernor>;
     getContractAt(
-      name: "SimpleCounter",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.SimpleCounter>;
-    getContractAt(
       name: "TimelockController",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.TimelockController>;
+    getContractAt(
+      name: "WorkingFactory",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WorkingFactory>;
+    getContractAt(
+      name: "WorkingFactoryRegistrar",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.WorkingFactoryRegistrar>;
 
     deployContract(
       name: "AccessControl",
@@ -789,6 +816,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20Token>;
     deployContract(
+      name: "FixedFactory",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FixedFactory>;
+    deployContract(
       name: "IContractRegistry",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IContractRegistry>;
@@ -797,17 +828,25 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Kinds>;
     deployContract(
+      name: "OwnedWorkingFactory",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.OwnedWorkingFactory>;
+    deployContract(
       name: "OZGovernor",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
     deployContract(
-      name: "SimpleCounter",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SimpleCounter>;
-    deployContract(
       name: "TimelockController",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TimelockController>;
+    deployContract(
+      name: "WorkingFactory",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WorkingFactory>;
+    deployContract(
+      name: "WorkingFactoryRegistrar",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WorkingFactoryRegistrar>;
 
     deployContract(
       name: "AccessControl",
@@ -1090,6 +1129,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20Token>;
     deployContract(
+      name: "FixedFactory",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FixedFactory>;
+    deployContract(
       name: "IContractRegistry",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1100,20 +1144,30 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Kinds>;
     deployContract(
+      name: "OwnedWorkingFactory",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.OwnedWorkingFactory>;
+    deployContract(
       name: "OZGovernor",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.OZGovernor>;
     deployContract(
-      name: "SimpleCounter",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.SimpleCounter>;
-    deployContract(
       name: "TimelockController",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TimelockController>;
+    deployContract(
+      name: "WorkingFactory",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WorkingFactory>;
+    deployContract(
+      name: "WorkingFactoryRegistrar",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.WorkingFactoryRegistrar>;
 
     // default types
     getContractFactory(

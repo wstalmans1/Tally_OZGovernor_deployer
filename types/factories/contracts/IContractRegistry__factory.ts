@@ -73,44 +73,51 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-      {
-        internalType: "bytes32",
-        name: "kind",
-        type: "bytes32",
-      },
-      {
-        internalType: "address",
-        name: "factory",
-        type: "address",
-      },
-      {
-        internalType: "bytes32",
-        name: "salt",
-        type: "bytes32",
-      },
-      {
-        internalType: "bytes32",
-        name: "initCodeHash",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint64",
-        name: "version",
-        type: "uint64",
-      },
-      {
-        internalType: "string",
-        name: "label",
-        type: "string",
-      },
-      {
-        internalType: "string",
-        name: "uri",
-        type: "string",
+        components: [
+          {
+            internalType: "address",
+            name: "addr",
+            type: "address",
+          },
+          {
+            internalType: "bytes32",
+            name: "kind",
+            type: "bytes32",
+          },
+          {
+            internalType: "address",
+            name: "factory",
+            type: "address",
+          },
+          {
+            internalType: "bytes32",
+            name: "salt",
+            type: "bytes32",
+          },
+          {
+            internalType: "bytes32",
+            name: "initCodeHash",
+            type: "bytes32",
+          },
+          {
+            internalType: "uint64",
+            name: "version",
+            type: "uint64",
+          },
+          {
+            internalType: "string",
+            name: "label",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "uri",
+            type: "string",
+          },
+        ],
+        internalType: "struct IContractRegistry.Registration",
+        name: "r",
+        type: "tuple",
       },
     ],
     name: "register",

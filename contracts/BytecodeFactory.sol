@@ -1,43 +1,51 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
 import {IContractRegistry} from "./IContractRegistry.sol";
 
 /**
  * @title BytecodeFactory
- * @notice DAO-owned factory to deploy arbitrary contracts from raw initcode via CREATE or CREATE2.
- *         - After initial setup, only the Timelock (owner) can deploy.
- *         - Supports sending ETH on deploy (msg.value).
- *         - Deterministic address support with CREATE2 + computeAddress().
+ * @notice DAO-owned factory that can deploy arbitrary contracts from raw initcode
+ *         via CREATE or CREATE2. Intended to be owned by a Timelock.
+ *         Supports ETH forwarding and automatic registration in a registry.
  */
 contract BytecodeFactory is Ownable2Step {
     event Deployed(address indexed addr, bytes32 indexed salt, bool create2, uint256 value);
+
     error EmptyInitcode();
     error DeployFailed();
 
-    constructor(address initialOwner) Ownable(initialOwner) {
-        // Ownership is set by parent constructor
-    }
+    /**
+     * @param initialOwner The address that will own the factory (usually the Timelock).
+     */
+    constructor(address initialOwner) Ownable(initialOwner) {}
 
-    /// @notice Deploy using CREATE. Payable: forwards msg.value to the new contract's constructor.
-    function deploy(bytes calldata initcode) external payable onlyOwner returns (address addr) {
+    // ---------------------------------------------------------------------
+    // CREATE DEPLOYS
+    // ---------------------------------------------------------------------
+
+    /// @notice Deploys a contract using CREATE.
+    function deploy(bytes calldata initcode)
+        public
+        payable
+        onlyOwner
+        returns (address addr)
+    {
         if (initcode.length == 0) revert EmptyInitcode();
-        // solhint-disable-next-line no-inline-assembly
         assembly {
-            let mem := mload(0x40)
+            let ptr := mload(0x40)
             let len := initcode.length
-            let data := add(initcode.offset, 0x00)
-            // copy to free memory
-            calldatacopy(mem, data, len)
-            addr := create(callvalue(), mem, len)
+            let off := initcode.offset
+            calldatacopy(ptr, off, len)
+            addr := create(callvalue(), ptr, len)
         }
         if (addr == address(0)) revert DeployFailed();
         emit Deployed(addr, bytes32(0), false, msg.value);
     }
 
-    /// @notice Deploy using CREATE and immediately register the deployment in a registry. Payable: forwards msg.value.
+    /// @notice Deploys using CREATE and immediately registers the deployment.
     function deployAndRegister(
         bytes calldata initcode,
         address registry,
@@ -45,27 +53,52 @@ contract BytecodeFactory is Ownable2Step {
         uint64 version,
         string calldata label,
         string calldata uri
-    ) external payable onlyOwner returns (address addr) {
-        addr = this.deploy{value: msg.value}(initcode);
-        _registerDeployment(registry, addr, kind, version, label, uri, bytes32(0), initcode);
+    )
+        external
+        payable
+        onlyOwner
+        returns (address addr)
+    {
+        addr = _deploy(initcode);
+
+        IContractRegistry.Registration memory r = IContractRegistry.Registration({
+            addr: addr,
+            kind: kind,
+            factory: address(this),
+            salt: bytes32(0),
+            initCodeHash: keccak256(initcode),
+            version: version,
+            label: label,
+            uri: uri
+        });
+
+        IContractRegistry(registry).register(r);
     }
 
-    /// @notice Deploy using CREATE2 at deterministic address. Payable: forwards msg.value.
-    function deployCreate2(bytes32 salt, bytes calldata initcode) external payable onlyOwner returns (address addr) {
+    // ---------------------------------------------------------------------
+    // CREATE2 DEPLOYS
+    // ---------------------------------------------------------------------
+
+    /// @notice Deploys a contract deterministically using CREATE2.
+    function deployCreate2(bytes32 salt, bytes calldata initcode)
+        public
+        payable
+        onlyOwner
+        returns (address addr)
+    {
         if (initcode.length == 0) revert EmptyInitcode();
-        // solhint-disable-next-line no-inline-assembly
         assembly {
-            let mem := mload(0x40)
+            let ptr := mload(0x40)
             let len := initcode.length
-            let data := add(initcode.offset, 0x00)
-            calldatacopy(mem, data, len)
-            addr := create2(callvalue(), mem, len, salt)
+            let off := initcode.offset
+            calldatacopy(ptr, off, len)
+            addr := create2(callvalue(), ptr, len, salt)
         }
         if (addr == address(0)) revert DeployFailed();
         emit Deployed(addr, salt, true, msg.value);
     }
 
-    /// @notice Deploy using CREATE2 and immediately register the deployment in a registry. Payable: forwards msg.value.
+    /// @notice Deploys via CREATE2 and immediately registers the contract.
     function deployCreate2AndRegister(
         bytes32 salt,
         bytes calldata initcode,
@@ -74,47 +107,88 @@ contract BytecodeFactory is Ownable2Step {
         uint64 version,
         string calldata label,
         string calldata uri
-    ) external payable onlyOwner returns (address addr) {
-        addr = this.deployCreate2{value: msg.value}(salt, initcode);
-        _registerDeployment(registry, addr, kind, version, label, uri, salt, initcode);
+    )
+        external
+        payable
+        onlyOwner
+        returns (address addr)
+    {
+        addr = _deployCreate2(salt, initcode);
+
+        IContractRegistry.Registration memory r = IContractRegistry.Registration({
+            addr: addr,
+            kind: kind,
+            factory: address(this),
+            salt: salt,
+            initCodeHash: keccak256(initcode),
+            version: version,
+            label: label,
+            uri: uri
+        });
+
+        IContractRegistry(registry).register(r);
     }
 
-    /// @notice Compute the address a CREATE2 deploy would use for the given salt+initcode.
-    function computeAddress(bytes32 salt, bytes calldata initcode) external view returns (address predicted) {
-        bytes32 hash = keccak256(abi.encodePacked(bytes1(0xff), address(this), salt, keccak256(initcode)));
+    // ---------------------------------------------------------------------
+    // INTERNAL HELPERS
+    // ---------------------------------------------------------------------
+
+    /// @notice Internal function to deploy using CREATE.
+    function _deploy(bytes calldata initcode)
+        internal
+        returns (address addr)
+    {
+        if (initcode.length == 0) revert EmptyInitcode();
+        assembly {
+            let ptr := mload(0x40)
+            let len := initcode.length
+            let off := initcode.offset
+            calldatacopy(ptr, off, len)
+            addr := create(callvalue(), ptr, len)
+        }
+        if (addr == address(0)) revert DeployFailed();
+        emit Deployed(addr, bytes32(0), false, msg.value);
+    }
+
+    /// @notice Internal function to deploy using CREATE2.
+    function _deployCreate2(bytes32 salt, bytes calldata initcode)
+        internal
+        returns (address addr)
+    {
+        if (initcode.length == 0) revert EmptyInitcode();
+        assembly {
+            let ptr := mload(0x40)
+            let len := initcode.length
+            let off := initcode.offset
+            calldatacopy(ptr, off, len)
+            addr := create2(callvalue(), ptr, len, salt)
+        }
+        if (addr == address(0)) revert DeployFailed();
+        emit Deployed(addr, salt, true, msg.value);
+    }
+
+    // ---------------------------------------------------------------------
+    // HELPERS
+    // ---------------------------------------------------------------------
+
+    /// @notice Computes the deterministic address for a CREATE2 deployment.
+    function computeAddress(bytes32 salt, bytes calldata initcode)
+        external
+        view
+        returns (address predicted)
+    {
+        bytes32 hash = keccak256(
+            abi.encodePacked(bytes1(0xff), address(this), salt, keccak256(initcode))
+        );
         predicted = address(uint160(uint256(hash)));
     }
 
-    /// @notice Helper to obtain keccak256(initcode) client-side checks.
-    function initcodeHash(bytes calldata initcode) external pure returns (bytes32) {
+    /// @notice Returns keccak256(initcode) for off-chain verification.
+    function initcodeHash(bytes calldata initcode)
+        external
+        pure
+        returns (bytes32)
+    {
         return keccak256(initcode);
     }
-
-    /// @notice Internal helper to register deployment with reduced stack usage
-    function _registerDeployment(
-        address registry,
-        address addr,
-        bytes32 kind,
-        uint64 version,
-        string calldata label,
-        string calldata uri,
-        bytes32 salt,
-        bytes calldata initcode
-    ) internal {
-        bytes32 initHash = keccak256(initcode);
-        IContractRegistry(registry).register(
-            addr,
-            kind,
-            address(this),
-            salt,
-            initHash,
-            version,
-            label,
-            uri
-        );
-    }
-
-    // Ownable2Step:
-    // - transferOwnership(newOwner)  -> callable by current owner (e.g., deployer)
-    // - acceptOwnership()            -> callable by newOwner (e.g., Timelock via proposal)
 }

@@ -23,6 +23,39 @@ import type {
   TypedContractMethod,
 } from "../common";
 
+export declare namespace IContractRegistry {
+  export type RegistrationStruct = {
+    addr: AddressLike;
+    kind: BytesLike;
+    factory: AddressLike;
+    salt: BytesLike;
+    initCodeHash: BytesLike;
+    version: BigNumberish;
+    label: string;
+    uri: string;
+  };
+
+  export type RegistrationStructOutput = [
+    addr: string,
+    kind: string,
+    factory: string,
+    salt: string,
+    initCodeHash: string,
+    version: bigint,
+    label: string,
+    uri: string
+  ] & {
+    addr: string;
+    kind: string;
+    factory: string;
+    salt: string;
+    initCodeHash: string;
+    version: bigint;
+    label: string;
+    uri: string;
+  };
+}
+
 export interface IContractRegistryInterface extends Interface {
   getFunction(nameOrSignature: "register"): FunctionFragment;
 
@@ -30,16 +63,7 @@ export interface IContractRegistryInterface extends Interface {
 
   encodeFunctionData(
     functionFragment: "register",
-    values: [
-      AddressLike,
-      BytesLike,
-      AddressLike,
-      BytesLike,
-      BytesLike,
-      BigNumberish,
-      string,
-      string
-    ]
+    values: [IContractRegistry.RegistrationStruct]
   ): string;
 
   decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
@@ -129,16 +153,7 @@ export interface IContractRegistry extends BaseContract {
   ): Promise<this>;
 
   register: TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
+    [r: IContractRegistry.RegistrationStruct],
     [string],
     "nonpayable"
   >;
@@ -150,16 +165,7 @@ export interface IContractRegistry extends BaseContract {
   getFunction(
     nameOrSignature: "register"
   ): TypedContractMethod<
-    [
-      addr: AddressLike,
-      kind: BytesLike,
-      factory: AddressLike,
-      salt: BytesLike,
-      initCodeHash: BytesLike,
-      version: BigNumberish,
-      label: string,
-      uri: string
-    ],
+    [r: IContractRegistry.RegistrationStruct],
     [string],
     "nonpayable"
   >;

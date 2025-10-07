@@ -29,7 +29,6 @@ const config: HardhatUserConfig = {
             enabled: true,
             runs: 200,
           },
-          viaIR: true,
         },
       },
     ],
@@ -76,7 +75,7 @@ const config: HardhatUserConfig = {
         chainId: 11155111,
         urls: {
           apiURL: "https://eth-sepolia.blockscout.com/api",
-          browserURL: "https://eth-sepolia.blockscout.com/",
+          browserURL: "https://eth-sepolia.blockscout.com",
         },
       },
     ],
